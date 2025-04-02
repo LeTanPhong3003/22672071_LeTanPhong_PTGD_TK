@@ -8,11 +8,8 @@
 }
 
 .grid-item {
-    background-color: #ccc;
-    border: 1px solid #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -24,17 +21,21 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 20px;
+    background-color: #333;
+    color: #fff;
 }
 
 .item1 a {
-    margin: 5px 0;
+    margin: 10px 0;
     text-decoration: none;
-    color: #000;
+    color: #fff;
 }
 
 .item2 {
     grid-row: 1 / 2; /* First row */
     grid-column: 2 / 3; /* Second column */
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
 }
 
 .item3 {
@@ -45,23 +46,27 @@
     align-items: flex-start;
     justify-content: flex-start;
     padding: 20px;
+    background-color: #fff;
 }
 
 .overview-header {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .overview-header .icon {
     margin-right: 10px;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
 }
 
 .item4 {
     grid-row: 3 / 4; /* Third row */
     grid-column: 2 / 3; /* Second column */
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
 }
 
 .nested-grid-container {
@@ -69,50 +74,47 @@
     flex-direction: row;
     gap: 20px;
     width: 100%;
-    height: 100%;
 }
 
 .nested-grid-item {
-    background-color: #aaa;
-    border: 1px solid #222;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 10px;
+    flex: 1;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 20px;
     box-sizing: border-box;
-    width: 100%;
 }
 
 .item-header {
     display: flex;
     justify-content: space-between;
-    width: 100%;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-.title {
-    align-self: flex-start;
+.item-header .title {
+    font-size: 16px;
     font-weight: bold;
 }
 
 .icon-button {
     background: none;
     border: none;
+    padding: 0;
     cursor: pointer;
-    align-self: flex-start;
 }
 
 .icon-button img {
-    width: 40px;
-    height: 40px;
+    width: 24px;
+    height: 24px;
 }
 
 .data {
-    margin-top: 10px;
-    font-size: 1.2em;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
 }
 
 .change {
-    margin-top: 5px;
-    color: #555;
+    font-size: 14px;
+    color: #888;
 }

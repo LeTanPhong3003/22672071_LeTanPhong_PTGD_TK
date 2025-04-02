@@ -4,9 +4,15 @@ import selectionIcon from '/img/overview_icon.jpg';
 import turnoverIcon from '/img/turnover.jpg';
 import profitIcon from '/img/profit.jpg';
 import customerIcon from '/img/customer.jpg';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 const GridLayout = () => {
     const [data, setData] = useState({ turnover: 0, turnoverChange: 0, profit: 0, profitChange: 0, newCustomer: 0, newCustomerChange: 0 });
+    const [tableData, setTableData] = useState([]);
 
     useEffect(() => {
         fetch('https://67ecb150aa794fb3222e75c0.mockapi.io/Overview')
@@ -23,6 +29,8 @@ const GridLayout = () => {
                     newCustomer: latest.Newcustomer,
                     newCustomerChange: ((latest.Newcustomer - previous.Newcustomer) / previous.Newcustomer * 100).toFixed(2)
                 });
+
+                setTableData(data);
             })
             .catch(error => console.error('Error fetching data:', error));
     }, []);
@@ -70,7 +78,16 @@ const GridLayout = () => {
                     </div>
                 </div>
             </div>
-            <div className="grid-item item4">DataTable</div>
+            <div className="grid-item item4">
+                <DataTable value={tableData} paginator rows={10}>
+                    <Column selectionMode="multiple" headerStyle={{ width: '3em' }}></Column>
+                    <Column field="customerName" header="CUSTOMER NAME" sortable></Column>
+                    <Column field="company" header="COMPANY" sortable></Column>
+                    <Column field="orderValue" header="ORDER VALUE" sortable></Column>
+                    <Column field="orderDate" header="ORDER DATE" sortable></Column>
+                    <Column field="status" header="STATUS" sortable></Column>
+                </DataTable>
+            </div>
         </div>
     );
 };
