@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import "./Dashboard.css";
 import selectionIcon from "/img/overview_icon.jpg";
 import turnoverIcon from "/img/turnover.jpg";
@@ -10,6 +9,7 @@ import { Column } from "primereact/column";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import { NavLink } from "react-router-dom";
 
 const GridLayout = () => {
   const [data, setData] = useState({
@@ -73,12 +73,54 @@ const GridLayout = () => {
     <div className="grid-container">
       <div className="grid-item item1">
         LOGO
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/projects">Projects</Link>
-        <Link to="/teams">Teams</Link>
-        <Link to="/analytics">Analytics</Link>
-        <Link to="/message">Message</Link>
-        <Link to="/integrations">Integrations</Link>
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Dashboard
+        </NavLink>
+        <NavLink
+          to="/projects"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Projects
+        </NavLink>
+        <NavLink
+          to="/teams"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Teams
+        </NavLink>
+        <NavLink
+          to="/analytics"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Analytics
+        </NavLink>
+        <NavLink
+          to="/message"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Message
+        </NavLink>
+        <NavLink
+          to="/integrations"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Integrations
+        </NavLink>
       </div>
       <div className="grid-item item2 header">
         <h1 className="header-title">Dashboard</h1>

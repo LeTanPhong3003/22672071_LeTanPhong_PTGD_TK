@@ -1,18 +1,60 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import "./Dashboard.css";
+import { NavLink } from "react-router-dom";
 
 const Integrations = () => {
   return (
     <div className="grid-container">
       <div className="grid-item item1">
         LOGO
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/projects">Projects</Link>
-        <Link to="/teams">Teams</Link>
-        <Link to="/analytics">Analytics</Link>
-        <Link to="/message">Message</Link>
-        <Link to="/integrations">Integrations</Link>
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Dashboard
+        </NavLink>
+        <NavLink
+          to="/projects"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Projects
+        </NavLink>
+        <NavLink
+          to="/teams"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Teams
+        </NavLink>
+        <NavLink
+          to="/analytics"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Analytics
+        </NavLink>
+        <NavLink
+          to="/message"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Message
+        </NavLink>
+        <NavLink
+          to="/integrations"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "inactive-link"
+          }
+        >
+          Integrations
+        </NavLink>
       </div>
       <div className="grid-item item2 header">
         <h1 className="header-title">Integrations</h1>

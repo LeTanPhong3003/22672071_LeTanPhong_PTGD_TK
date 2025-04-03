@@ -189,3 +189,18 @@
 .edit-button:hover .edit-icon {
   filter: brightness(0.8);
 }
+
+.active-link {
+  color: #ff4081;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.inactive-link {
+  color: #555;
+  text-decoration: none;
+}
+
+.inactive-link:hover {
+  color: #000;
+}
