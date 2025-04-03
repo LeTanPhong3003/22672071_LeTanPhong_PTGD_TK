@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "./GridLayout.css";
+import { Link } from "react-router-dom";
+import "./Dashboard.css";
 import selectionIcon from "/img/overview_icon.jpg";
 import turnoverIcon from "/img/turnover.jpg";
 import profitIcon from "/img/profit.jpg";
@@ -20,7 +21,7 @@ const GridLayout = () => {
     newCustomerChange: 0,
   });
   const [tableData, setTableData] = useState([]);
-  const [selectedRows, setSelectedRows] = useState(null); // State để lưu các hàng được chọn
+  const [selectedRows, setSelectedRows] = useState(null);
 
   useEffect(() => {
     // Fetch data for overview
@@ -68,28 +69,34 @@ const GridLayout = () => {
       .catch((error) => console.error("Error fetching table data:", error));
   }, []);
 
-  const avatarTemplate = (rowData) => {
-    return (
-      <img
-        src={rowData.avatar}
-        alt="Avatar"
-        style={{ width: "40px", borderRadius: "50%" }}
-      />
-    );
-  };
-
   return (
     <div className="grid-container">
       <div className="grid-item item1">
         LOGO
-        <a href="">Dashboard</a>
-        <a href="">Projects</a>
-        <a href="">Teams</a>
-        <a href="">Analytics</a>
-        <a href="">Message</a>
-        <a href="">Integrations</a>
+        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/projects">Projects</Link>
+        <Link to="/teams">Teams</Link>
+        <Link to="/analytics">Analytics</Link>
+        <Link to="/message">Message</Link>
+        <Link to="/integrations">Integrations</Link>
       </div>
-      <div className="grid-item item2">Header</div>
+      <div className="grid-item item2 header">
+        <h1 className="header-title">Dashboard</h1>
+        <div className="header-actions">
+          <input type="text" placeholder="Search..." className="search-input" />
+          <img
+            src="/img/notification.jpg"
+            alt="Notification"
+            className="notification-icon"
+          />
+          <img src="/img/help.jpg" alt="Help" className="help-icon" />
+          <img
+            src="https://loremflickr.com/40/40?lock=1"
+            alt="User Avatar"
+            className="user-avatar"
+          />
+        </div>
+      </div>
       <div className="grid-item item3">
         <div className="overview-header">
           <h2>
@@ -135,8 +142,8 @@ const GridLayout = () => {
           value={tableData}
           paginator
           rows={10}
-          selection={selectedRows} // Gán state selectedRows
-          onSelectionChange={(e) => setSelectedRows(e.value)} // Cập nhật state khi chọn
+          selection={selectedRows}
+          onSelectionChange={(e) => setSelectedRows(e.value)}
         >
           <Column
             selectionMode="multiple"
@@ -160,6 +167,15 @@ const GridLayout = () => {
           <Column field="orderValue" header="ORDER VALUE" sortable></Column>
           <Column field="orderDate" header="ORDER DATE" sortable></Column>
           <Column field="status" header="STATUS" sortable></Column>
+          <Column
+            header="EDIT"
+            body={() => (
+              <button className="edit-button">
+                <img src="/img/pen.jpg" alt="Edit" className="edit-icon" />
+              </button>
+            )}
+            style={{ textAlign: "center", width: "5em" }}
+          ></Column>
         </DataTable>
       </div>
     </div>
