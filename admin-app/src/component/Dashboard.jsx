@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from "react";
-import selectionIcon from "/img/overview_icon.jpg";
-import turnoverIcon from "/img/turnover.jpg";
-import profitIcon from "/img/profit.jpg";
-import customerIcon from "/img/customer.jpg";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { NavLink } from "react-router-dom";
@@ -13,6 +9,7 @@ import "primeicons/primeicons.css";
 import "./Dashboard.css";
 
 const GridLayout = () => {
+  // Data for the overview section
   const [data, setData] = useState({
     turnover: 0,
     turnoverChange: 0,
@@ -24,6 +21,55 @@ const GridLayout = () => {
 
   const [tableData, setTableData] = useState([]);
   const [selectedRows, setSelectedRows] = useState(null);
+
+  useEffect(() => {
+    // Fetch data for overview
+    fetch("https://67ecb150aa794fb3222e75c0.mockapi.io/Overview")
+      .then((response) => response.json())
+      .then((data) => {
+        const latest = data[data.length - 1];
+        const previous = data[data.length - 2];
+
+        setData({
+          turnover: latest.Turnover,
+          turnoverChange: (
+            ((latest.Turnover - previous.Turnover) / previous.Turnover) *
+            100
+          ).toFixed(2),
+          profit: latest.Profit,
+          profitChange: (
+            ((latest.Profit - previous.Profit) / previous.Profit) *
+            100
+          ).toFixed(2),
+          newCustomer: latest.Newcustomer,
+          newCustomerChange: (
+            ((latest.Newcustomer - previous.Newcustomer) /
+              previous.Newcustomer) *
+            100
+          ).toFixed(2),
+        });
+      })
+      .catch((error) => console.error("Error fetching overview data:", error));
+
+    // Fetch data for DataTable
+    fetch("https://67ecb150aa794fb3222e75c0.mockapi.io/datatable")
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedData = data.map((item) => ({
+          id: item.id,
+          customerName: item.name,
+          company: item.company,
+          orderValue: `$${parseFloat(item.oderValue).toFixed(2)}`,
+          orderDate: new Date(item.oderDate).toLocaleDateString(),
+          status: item.status ? "Completed" : "In-progress",
+          avatar: item.avatar,
+        }));
+        setTableData(formattedData);
+      })
+      .catch((error) => console.error("Error fetching table data:", error));
+  }, []);
+
+  // Modal state and data
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [editData, setEditData] = useState({
@@ -120,52 +166,75 @@ const GridLayout = () => {
     }));
   };
 
-  useEffect(() => {
-    // Fetch data for overview
-    fetch("https://67ecb150aa794fb3222e75c0.mockapi.io/Overview")
-      .then((response) => response.json())
-      .then((data) => {
-        const latest = data[data.length - 1];
-        const previous = data[data.length - 2];
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newUserData, setNewUserData] = useState({
+    customerName: "",
+    company: "",
+    orderValue: "",
+    orderDate: "",
+    status: "Completed",
+  });
 
-        setData({
-          turnover: latest.Turnover,
-          turnoverChange: (
-            ((latest.Turnover - previous.Turnover) / previous.Turnover) *
-            100
-          ).toFixed(2),
-          profit: latest.Profit,
-          profitChange: (
-            ((latest.Profit - previous.Profit) / previous.Profit) *
-            100
-          ).toFixed(2),
-          newCustomer: latest.Newcustomer,
-          newCustomerChange: (
-            ((latest.Newcustomer - previous.Newcustomer) /
-              previous.Newcustomer) *
-            100
-          ).toFixed(2),
-        });
-      })
-      .catch((error) => console.error("Error fetching overview data:", error));
+  const openAddModal = () => {
+    setIsAddModalOpen(true);
+  };
 
-    // Fetch data for DataTable
-    fetch("https://67ecb150aa794fb3222e75c0.mockapi.io/datatable")
+  const closeAddModal = () => {
+    setIsAddModalOpen(false);
+    setNewUserData({
+      customerName: "",
+      company: "",
+      orderValue: "",
+      orderDate: "",
+      status: "Completed",
+    });
+  };
+
+  const handleAddInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewUserData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleAddUser = () => {
+    // Gửi dữ liệu qua API POST
+    fetch("https://67ecb150aa794fb3222e75c0.mockapi.io/datatable", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: newUserData.customerName,
+        company: newUserData.company,
+        oderValue: newUserData.orderValue,
+        oderDate: newUserData.orderDate,
+        status: newUserData.status === "Completed",
+      }),
+    })
       .then((response) => response.json())
-      .then((data) => {
-        const formattedData = data.map((item) => ({
-          id: item.id,
-          customerName: item.name,
-          company: item.company,
-          orderValue: `$${parseFloat(item.oderValue).toFixed(2)}`,
-          orderDate: new Date(item.oderDate).toLocaleDateString(),
-          status: item.status ? "Completed" : "In-progress",
-          avatar: item.avatar,
-        }));
-        setTableData(formattedData);
+      .then((createdUser) => {
+        console.log("Created user:", createdUser);
+
+        // Cập nhật bảng DataTable
+        setTableData((prevTableData) => [
+          ...prevTableData,
+          {
+            id: createdUser.id,
+            customerName: createdUser.name,
+            company: createdUser.company,
+            orderValue: `$${parseFloat(createdUser.oderValue).toFixed(2)}`,
+            orderDate: new Date(createdUser.oderDate).toLocaleDateString(),
+            status: createdUser.status ? "Completed" : "In-progress",
+            avatar: createdUser.avatar || "https://via.placeholder.com/40",
+          },
+        ]);
+
+        closeAddModal();
       })
-      .catch((error) => console.error("Error fetching table data:", error));
-  }, []);
+      .catch((error) => console.error("Error adding user:", error));
+  };
 
   return (
     <div className="grid-container">
@@ -240,7 +309,11 @@ const GridLayout = () => {
       <div className="grid-item item3">
         <div className="overview-header">
           <h2>
-            <img src={selectionIcon} alt="Overview Icon" className="icon" />{" "}
+            <img
+              src="/img/overview_icon.jpg"
+              alt="Overview Icon"
+              className="icon"
+            />{" "}
             Overview
           </h2>
         </div>
@@ -249,7 +322,7 @@ const GridLayout = () => {
             <div className="item-header">
               <p className="title">Turnover</p>
               <button className="icon-button">
-                <img src={turnoverIcon} alt="Turnover Icon" />
+                <img src="./img/turnover.jpg" alt="Turnover Icon" />
               </button>
             </div>
             <p className="data">${data.turnover}</p>
@@ -259,7 +332,7 @@ const GridLayout = () => {
             <div className="item-header">
               <p className="title">Profit</p>
               <button className="icon-button">
-                <img src={profitIcon} alt="Profit Icon" />
+                <img src="./img/profit.jpg" alt="Profit Icon" />
               </button>
             </div>
             <p className="data">${data.profit}</p>
@@ -269,7 +342,7 @@ const GridLayout = () => {
             <div className="item-header">
               <p className="title">New Customer</p>
               <button className="icon-button">
-                <img src={customerIcon} alt="Customer Icon" />
+                <img src="./img/customer.jpg" alt="Customer Icon" />
               </button>
             </div>
             <p className="data">{data.newCustomer}</p>
@@ -278,6 +351,21 @@ const GridLayout = () => {
         </div>
       </div>
       <div className="grid-item item4">
+        <div className="detailed-report-header">
+          <div className="detailed-report-title">
+            <img
+              src="./img/report-icon.jpg"
+              alt="Report Icon"
+              className="report-icon"
+            />
+            <h2>Detailed report</h2>
+          </div>
+          <div className="add-user-button-container">
+            <button className="add-user-button" onClick={openAddModal}>
+              Add User
+            </button>
+          </div>
+        </div>
         <DataTable
           value={tableData}
           paginator
@@ -382,6 +470,68 @@ const GridLayout = () => {
         </div>
         <button onClick={handleSave}>Save</button>
         <button onClick={closeModal}>Close</button>
+      </ReactModal>
+
+      {/* Modal Add User */}
+      <ReactModal
+        isOpen={isAddModalOpen}
+        onRequestClose={closeAddModal}
+        contentLabel="Add User"
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
+        <h2>Add User</h2>
+        <div>
+          <label>
+            Customer Name:
+            <input
+              type="text"
+              name="customerName"
+              value={newUserData.customerName}
+              onChange={handleAddInputChange}
+            />
+          </label>
+          <label>
+            Company:
+            <input
+              type="text"
+              name="company"
+              value={newUserData.company}
+              onChange={handleAddInputChange}
+            />
+          </label>
+          <label>
+            Order Value:
+            <input
+              type="text"
+              name="orderValue"
+              value={newUserData.orderValue}
+              onChange={handleAddInputChange}
+            />
+          </label>
+          <label>
+            Order Date:
+            <input
+              type="date"
+              name="orderDate"
+              value={newUserData.orderDate}
+              onChange={handleAddInputChange}
+            />
+          </label>
+          <label>
+            Status:
+            <select
+              name="status"
+              value={newUserData.status}
+              onChange={handleAddInputChange}
+            >
+              <option value="Completed">Completed</option>
+              <option value="In-progress">In-progress</option>
+            </select>
+          </label>
+        </div>
+        <button onClick={handleAddUser}>Add</button>
+        <button onClick={closeAddModal}>Cancel</button>
       </ReactModal>
     </div>
   );
