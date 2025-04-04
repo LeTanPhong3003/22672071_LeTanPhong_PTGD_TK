@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import "./Dashboard.css";
 import selectionIcon from "/img/overview_icon.jpg";
 import turnoverIcon from "/img/turnover.jpg";
 import profitIcon from "/img/profit.jpg";
 import customerIcon from "/img/customer.jpg";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { NavLink } from "react-router-dom";
+import ReactModal from "react-modal";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import { NavLink } from "react-router-dom";
+import "./Dashboard.css";
 
 const GridLayout = () => {
   const [data, setData] = useState({
@@ -20,8 +21,21 @@ const GridLayout = () => {
     newCustomer: 0,
     newCustomerChange: 0,
   });
+
   const [tableData, setTableData] = useState([]);
   const [selectedRows, setSelectedRows] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  const handleEditClick = (rowData) => {
+    setSelectedRow(rowData);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedRow(null);
+  };
 
   useEffect(() => {
     // Fetch data for overview
@@ -57,6 +71,7 @@ const GridLayout = () => {
       .then((response) => response.json())
       .then((data) => {
         const formattedData = data.map((item) => ({
+          id: item.id,
           customerName: item.name,
           company: item.company,
           orderValue: `$${parseFloat(item.oderValue).toFixed(2)}`,
@@ -211,8 +226,11 @@ const GridLayout = () => {
           <Column field="status" header="STATUS" sortable></Column>
           <Column
             header="EDIT"
-            body={() => (
-              <button className="edit-button">
+            body={(rowData) => (
+              <button
+                className="edit-button"
+                onClick={() => handleEditClick(rowData)}
+              >
                 <img src="/img/pen.jpg" alt="Edit" className="edit-icon" />
               </button>
             )}
@@ -220,6 +238,38 @@ const GridLayout = () => {
           ></Column>
         </DataTable>
       </div>
+
+      {/* Modal */}
+      <ReactModal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Edit Row"
+        className="modal"
+        overlayClassName="modal-overlay"
+      >
+        <h2>Edit Row</h2>
+        {selectedRow && (
+          <div>
+            <p>
+              <strong>Customer Name:</strong> {selectedRow.customerName}
+            </p>
+            <p>
+              <strong>Company:</strong> {selectedRow.company}
+            </p>
+            <p>
+              <strong>Order Value:</strong> {selectedRow.orderValue}
+            </p>
+            <p>
+              <strong>Order Date:</strong> {selectedRow.orderDate}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedRow.status}
+            </p>
+            {/* Add form fields here to edit the data */}
+          </div>
+        )}
+        <button onClick={closeModal}>Close</button>
+      </ReactModal>
     </div>
   );
 };
