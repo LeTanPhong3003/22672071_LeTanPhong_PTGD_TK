@@ -26,15 +26,98 @@ const GridLayout = () => {
   const [selectedRows, setSelectedRows] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [editData, setEditData] = useState({
+    customerName: "",
+    company: "",
+    orderValue: "",
+    orderDate: "",
+    status: "",
+  });
 
   const handleEditClick = (rowData) => {
     setSelectedRow(rowData);
     setIsModalOpen(true);
+
+    // Fetch detailed data for the selected row
+    fetch(`https://67ecb150aa794fb3222e75c0.mockapi.io/datatable/${rowData.id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setEditData({
+          customerName: data.name,
+          company: data.company,
+          orderValue: data.oderValue,
+          orderDate: data.oderDate,
+          status: data.status ? "Completed" : "In-progress",
+        });
+      })
+      .catch((error) => console.error("Error fetching row data:", error));
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedRow(null);
+    setEditData({
+      customerName: "",
+      company: "",
+      orderValue: "",
+      orderDate: "",
+      status: "",
+    });
+  };
+
+  const handleSave = () => {
+    // Update data via PUT API
+    fetch(
+      `https://67ecb150aa794fb3222e75c0.mockapi.io/datatable/${selectedRow.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: editData.customerName,
+          company: editData.company,
+          oderValue: editData.orderValue,
+          oderDate: editData.orderDate,
+          status: editData.status === "Completed",
+        }),
+      }
+    )
+      .then((response) => response.json())
+      .then((updatedData) => {
+        console.log("Updated data:", updatedData);
+
+        // Update the tableData state
+        setTableData((prevTableData) =>
+          prevTableData.map((item) =>
+            item.id === updatedData.id
+              ? {
+                  ...item,
+                  customerName: updatedData.name,
+                  company: updatedData.company,
+                  orderValue: `$${parseFloat(updatedData.oderValue).toFixed(
+                    2
+                  )}`,
+                  orderDate: new Date(
+                    updatedData.oderDate
+                  ).toLocaleDateString(),
+                  status: updatedData.status ? "Completed" : "In-progress",
+                }
+              : item
+          )
+        );
+
+        closeModal();
+      })
+      .catch((error) => console.error("Error updating data:", error));
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   useEffect(() => {
@@ -248,26 +331,56 @@ const GridLayout = () => {
         overlayClassName="modal-overlay"
       >
         <h2>Edit Row</h2>
-        {selectedRow && (
-          <div>
-            <p>
-              <strong>Customer Name:</strong> {selectedRow.customerName}
-            </p>
-            <p>
-              <strong>Company:</strong> {selectedRow.company}
-            </p>
-            <p>
-              <strong>Order Value:</strong> {selectedRow.orderValue}
-            </p>
-            <p>
-              <strong>Order Date:</strong> {selectedRow.orderDate}
-            </p>
-            <p>
-              <strong>Status:</strong> {selectedRow.status}
-            </p>
-            {/* Add form fields here to edit the data */}
-          </div>
-        )}
+        <div>
+          <label>
+            Customer Name:
+            <input
+              type="text"
+              name="customerName"
+              value={editData.customerName}
+              onChange={handleInputChange}
+            />
+          </label>
+          <label>
+            Company:
+            <input
+              type="text"
+              name="company"
+              value={editData.company}
+              onChange={handleInputChange}
+            />
+          </label>
+          <label>
+            Order Value:
+            <input
+              type="text"
+              name="orderValue"
+              value={editData.orderValue}
+              onChange={handleInputChange}
+            />
+          </label>
+          <label>
+            Order Date:
+            <input
+              type="date"
+              name="orderDate"
+              value={editData.orderDate}
+              onChange={handleInputChange}
+            />
+          </label>
+          <label>
+            Status:
+            <select
+              name="status"
+              value={editData.status}
+              onChange={handleInputChange}
+            >
+              <option value="Completed">Completed</option>
+              <option value="In-progress">In-progress</option>
+            </select>
+          </label>
+        </div>
+        <button onClick={handleSave}>Save</button>
         <button onClick={closeModal}>Close</button>
       </ReactModal>
     </div>
