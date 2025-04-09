@@ -84,16 +84,58 @@
   box-sizing: border-box;
 }
 
-.item-header {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
 }
 
-.item-header .title {
-  font-size: 16px;
+.header-title {
+  font-size: 24px;
   font-weight: bold;
+  color: #ff4081;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.search-input {
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.notification-icon,
+.help-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.notification-icon:hover,
+.help-icon:hover {
+  filter: brightness(0.8);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
 }
 
 .icon-button {
@@ -130,4 +172,20 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.edit-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.edit-button:hover .edit-icon {
+  filter: brightness(0.8);
 }
